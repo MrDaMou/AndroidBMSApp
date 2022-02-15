@@ -1,27 +1,30 @@
 package de.jnns.bmsmonitor
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BikeData
 import de.jnns.bmsmonitor.databinding.FragmentBikeBinding
+import de.jnns.bmsmonitor.services.BikeService
+import de.jnns.bmsmonitor.services.BmsService
+
 
 @ExperimentalUnsignedTypes
 class BikeFragment : Fragment() {
     private var _binding: FragmentBikeBinding? = null
     private val binding get() = _binding!!
+
+    var vescService: BikeService? = null
+    var vescServiceBound = false
 
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -74,6 +77,31 @@ class BikeFragment : Fragment() {
 
             binding.labelSpeed.text = bikeData.speed.toString()
             binding.labelAssistLevel.text = bikeData.assistLevel.toString()
+        }
+    }
+
+    private fun doStuff(){
+        Intent(activity, BmsService::class.java).also { intent ->
+            activity?.bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
+        }
+
+        vescService?.setBallernProfile()
+    }
+
+    /** Defines callbacks for service binding, passed to bindService()  */
+    private val mConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            className: ComponentName,
+            service: IBinder
+        ) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            val binder: BikeService.LocalBinder = service as BikeService.LocalBinder
+            vescService = binder.service
+            vescServiceBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            vescServiceBound = false
         }
     }
 }

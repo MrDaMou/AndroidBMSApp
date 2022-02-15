@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -16,8 +17,13 @@ import de.jnns.bmsmonitor.bluetooth.BikeGattClientCallback
 import de.jnns.bmsmonitor.bluetooth.BleManager
 import de.jnns.bmsmonitor.data.BikeData
 
+
 @ExperimentalUnsignedTypes
 class BikeService : Service() {
+
+    // Binder stuff
+    private val mBinder: IBinder = LocalBinder()
+
     // bluetooth stuff
     private lateinit var bluetoothGatt: BluetoothGatt
     private lateinit var gattClientCallback: BikeGattClientCallback
@@ -77,8 +83,15 @@ class BikeService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    inner class LocalBinder : Binder() {
+        // Return this instance of LocalService so clients can call public methods
+        val service: BikeService
+            get() =// Return this instance of LocalService so clients can call public methods
+                this@BikeService
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        return mBinder
     }
 
     private fun onLcdToMcuDataAvailable(data: LcdToMcuResponse) {
@@ -129,6 +142,9 @@ class BikeService : Service() {
         isConnecting = false
     }
 
+    public fun setBallernProfile() {
+        return
+    }
 
     private fun connectToDevice() {
         if (!isConnected && !isConnecting) {

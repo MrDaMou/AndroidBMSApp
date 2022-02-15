@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/navigation_bike"
-        android:name="de.jnns.bmsmonitor.BikeFragment"
+        android:name="de.jnns.bmsmonitor.VescProfileFragment"
         android:label="fragment_bike"
-        tools:layout="@layout/fragment_bike" />
+        tools:layout="@layout/fragment_vesc" />
 
     <fragment
         android:id="@+id/navigation_stats"

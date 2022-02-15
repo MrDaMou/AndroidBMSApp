@@ -26,7 +26,7 @@
         </activity>
 
         <service android:name=".services.BmsService" android:stopWithTask="true" />
-        <service android:name=".services.BikeService" android:stopWithTask="true" />
+        <service android:name=".services.VescService" android:stopWithTask="true" />
         <service android:name=".bluetooth.BleService" android:stopWithTask="true" />
     </application>
 

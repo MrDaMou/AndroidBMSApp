@@ -10,7 +10,7 @@ import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import de.jnns.bmsmonitor.bluetooth.BleService
 import de.jnns.bmsmonitor.databinding.ActivityMainBinding
-import de.jnns.bmsmonitor.services.BikeService
+import de.jnns.bmsmonitor.services.VescService
 import de.jnns.bmsmonitor.services.BmsService
 import io.realm.Realm
 
@@ -44,14 +44,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (bikeEnabled) {
-                Intent(this, BikeService::class.java).also { intent -> startService(intent) }
+                Intent(this, VescService::class.java).also { intent -> startService(intent) }
             }
 
             Intent(this, BleService::class.java).also { intent -> startService(intent) }
         }
 
         val batteryFragment = BatteryFragment()
-        val bikeFragment = BikeFragment()
+        val bikeFragment = VescProfileFragment()
         val statsFragment = StatsFragment()
         val settingsFragment = SettingsFragment()
 

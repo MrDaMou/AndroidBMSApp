@@ -13,17 +13,17 @@ import androidx.preference.PreferenceManager
 import com.github.anastr.speedviewlib.components.Section
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.data.BikeData
-import de.jnns.bmsmonitor.databinding.FragmentBikeBinding
-import de.jnns.bmsmonitor.services.BikeService
+import de.jnns.bmsmonitor.databinding.FragmentVescBinding
+import de.jnns.bmsmonitor.services.VescService
 import de.jnns.bmsmonitor.services.BmsService
 
 
 @ExperimentalUnsignedTypes
-class BikeFragment : Fragment() {
-    private var _binding: FragmentBikeBinding? = null
+class VescProfileFragment : Fragment() {
+    private var _binding: FragmentVescBinding? = null
     private val binding get() = _binding!!
 
-    var vescService: BikeService? = null
+    var vescService: VescService? = null
     var vescServiceBound = false
 
     private val mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -47,7 +47,12 @@ class BikeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver, IntentFilter("bikeDataIntent"))
-        _binding = FragmentBikeBinding.inflate(inflater, container, false)
+        _binding = FragmentVescBinding.inflate(inflater, container, false)
+
+        Intent(activity, BmsService::class.java).also { intent ->
+            activity?.bindService(intent, mConnection, Context.BIND_AUTO_CREATE)
+        }
+
         return binding.root
     }
 
@@ -64,11 +69,14 @@ class BikeFragment : Fragment() {
         )
 
         binding.speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxSpeed", "35")!!.toFloat()
+
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        activity?.unbindService(mConnection)
     }
 
     private fun updateUi(bikeData: BikeData) {
@@ -95,7 +103,7 @@ class BikeFragment : Fragment() {
             service: IBinder
         ) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            val binder: BikeService.LocalBinder = service as BikeService.LocalBinder
+            val binder: VescService.LocalBinder = service as VescService.LocalBinder
             vescService = binder.service
             vescServiceBound = true
         }

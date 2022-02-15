@@ -13,20 +13,26 @@ import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import de.jnns.bmsmonitor.bike.LcdToMcuResponse
 import de.jnns.bmsmonitor.bike.McuToLcdResponse
-import de.jnns.bmsmonitor.bluetooth.BikeGattClientCallback
+import de.jnns.bmsmonitor.bluetooth.VescGattClientCallback
 import de.jnns.bmsmonitor.bluetooth.BleManager
 import de.jnns.bmsmonitor.data.BikeData
 
 
 @ExperimentalUnsignedTypes
-class BikeService : Service() {
+class VescService : Service() {
+
+    // VESC Profile commands, they won't change
+    // TODO: Get real profile commands
+    private val cmdVescProfileBallern: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x03U, 0x00U, 0xFFU, 0xFDU, 0x77U).toByteArray()
+    private val cmdVescProfileCruise: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x04U, 0x00U, 0xFFU, 0xFCU, 0x77U).toByteArray()
+    private val cmdVescProfileLegal: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x04U, 0x00U, 0xFFU, 0xFCU, 0x77U).toByteArray()
 
     // Binder stuff
     private val mBinder: IBinder = LocalBinder()
 
     // bluetooth stuff
     private lateinit var bluetoothGatt: BluetoothGatt
-    private lateinit var gattClientCallback: BikeGattClientCallback
+    private lateinit var gattClientCallback: VescGattClientCallback
     private lateinit var currentBleDevice: BluetoothDevice
 
     // bluetooth device mac to use
@@ -71,9 +77,7 @@ class BikeService : Service() {
         prefs.registerOnSharedPreferenceChangeListener(listener)
 
         // bluetooth uart callbacks
-        gattClientCallback = BikeGattClientCallback(
-            ::onLcdToMcuDataAvailable,  // process lcd to mcu info
-            ::onMcuToLcdDataAvailable,  // process mcu to lcd info
+        gattClientCallback = VescGattClientCallback(
             ::onConnectionSucceeded,    // on connection fails
             ::connectToDevice           // on connection fails
         )
@@ -85,9 +89,9 @@ class BikeService : Service() {
 
     inner class LocalBinder : Binder() {
         // Return this instance of LocalService so clients can call public methods
-        val service: BikeService
+        val service: VescService
             get() =// Return this instance of LocalService so clients can call public methods
-                this@BikeService
+                this@VescService
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -142,7 +146,7 @@ class BikeService : Service() {
         isConnecting = false
     }
 
-    public fun setBallernProfile() {
+    fun setBallernProfile() {
         return
     }
 
@@ -151,9 +155,7 @@ class BikeService : Service() {
             isConnecting = true
 
             // bluetooth uart callbacks
-            gattClientCallback = BikeGattClientCallback(
-                ::onLcdToMcuDataAvailable,  // process lcd to mcu info
-                ::onMcuToLcdDataAvailable,  // process mcu to lcd info
+            gattClientCallback = VescGattClientCallback(
                 ::onConnectionSucceeded,    // on connection succeeded
                 ::onConnectionFailed        // on connection fails
             )

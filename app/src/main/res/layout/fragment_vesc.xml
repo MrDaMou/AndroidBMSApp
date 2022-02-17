@@ -8,129 +8,116 @@
     tools:context=".VescProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cardGauge"
+        android:id="@+id/layoutBallern"
         android:layout_width="0dp"
-        android:layout_height="320dp"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/bgBase"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutCruise"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.github.anastr.speedviewlib.SpeedView
-            android:id="@+id/speedViewSpeed"
-            android:layout_width="416dp"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonBallern"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/bgBase"
+            android:background="@drawable/vesc_profile_button_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:sv_centerCircleColor="@color/bgBase2"
-            app:sv_centerCircleRadius="18dp"
-            app:sv_endDegree="360"
-            app:sv_indicator="NeedleIndicator"
-            app:sv_indicatorColor="@color/white"
-            app:sv_indicatorWidth="16dp"
-            app:sv_markHeight="0px"
-            app:sv_maxSpeed="35"
-            app:sv_minSpeed="0"
-            app:sv_speedTextColor="@color/white"
-            app:sv_speedTextFormat="INTEGER"
-            app:sv_speedTextPadding="0px"
-            app:sv_speedTextPosition="BOTTOM_RIGHT"
-            app:sv_speedTextSize="0sp"
-            app:sv_speedometerMode="NORMAL"
-            app:sv_startDegree="90"
-            app:sv_textColor="@color/white"
-            app:sv_textSize="0px"
-            app:sv_unitTextSize="0px"
-            app:sv_withTremble="false" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/labelStatus"
-            android:layout_width="wrap_content"
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/threeDotPlaceholder"
-            android:textColor="@color/darkBorder"
-            android:textSize="12sp"
-            android:typeface="monospace"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_horizontal"
+            android:text="Ballern"
+            android:textColor="@color/white"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/textView4"
+            app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelHeader" />
+            app:layout_constraintTop_toTopOf="@id/buttonBallern" />
 
         <TextView
-            android:id="@+id/labelHeader"
-            android:layout_width="wrap_content"
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="120dp"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/speed"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_horizontal"
+            android:text="ayyyyyyy"
             android:textColor="@color/white"
-            android:textSize="24sp"
-            android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
-            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed"
-            app:layout_constraintStart_toStartOf="@+id/speedViewSpeed"
-            app:layout_constraintTop_toTopOf="@+id/speedViewSpeed" />
+            app:layout_constraintBottom_toTopOf="@id/textView5"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView" />
 
         <TextView
-            android:id="@+id/labelAssistLevel"
-            android:layout_width="wrap_content"
+            android:id="@+id/textView5"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/zeroZero"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="center_horizontal"
+            android:text="ayyyyyyy"
             android:textColor="@color/white"
-            android:textSize="32sp"
-            android:typeface="monospace"
-            app:layout_constraintBottom_toTopOf="@+id/labelSpeed"
-            app:layout_constraintEnd_toEndOf="@+id/labelSpeed" />
-
-        <TextView
-            android:id="@+id/labelSpeed"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="64dp"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/zeroZero"
-            android:textColor="@color/white"
-            android:textSize="32sp"
-            android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/speedViewSpeed"
-            app:layout_constraintEnd_toEndOf="@+id/speedViewSpeed" />
-
-        <TextView
-            android:id="@+id/labelAssistUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="3dp"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/unitDisplayLevel"
-            android:textColor="@color/darkBorder"
-            android:textSize="24sp"
-            android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/labelAssistLevel"
-            app:layout_constraintStart_toEndOf="@+id/labelAssistLevel" />
-
-        <TextView
-            android:id="@+id/labelPowerUnit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="3dp"
-            android:fontFamily="@font/aldrich"
-            android:text="@string/unitDisplayKilometersPerHour"
-            android:textColor="@color/darkBorder"
-            android:textSize="24sp"
-            android:typeface="monospace"
-            app:layout_constraintBottom_toBottomOf="@+id/labelSpeed"
-            app:layout_constraintStart_toEndOf="@+id/labelSpeed" />
+            app:layout_constraintBottom_toBottomOf="@id/buttonBallern"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textView4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCruise"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutLegal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutBallern">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonCruise"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/vesc_profile_button_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutLegal"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutCruise">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/buttonLegal"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/vesc_profile_button_bg"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

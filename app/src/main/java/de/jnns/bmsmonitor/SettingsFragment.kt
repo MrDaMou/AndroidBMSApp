@@ -17,16 +17,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         super.onViewCreated(view, savedInstanceState)
 
         val btPreference = findPreference<ListPreference>("macAddress") as ListPreference
-        val btPreferenceBike = findPreference<ListPreference>("macAddressBike") as ListPreference
+        val btPreferenceVesc = findPreference<ListPreference>("macAddressVesc") as ListPreference
 
         val bleNames = BleManager.i.getBleNames()
         bleNames.add("None")
         btPreference.entries = bleNames.toTypedArray()
-        btPreferenceBike.entries = bleNames.toTypedArray()
+        btPreferenceVesc.entries = bleNames.toTypedArray()
 
         val bleAddresses = BleManager.i.getBleAddresses()
         bleAddresses.add("0")
         btPreference.entryValues = bleAddresses.toTypedArray()
-        btPreferenceBike.entryValues = bleAddresses.toTypedArray()
+        btPreferenceVesc.entryValues = bleAddresses.toTypedArray()
     }
 }

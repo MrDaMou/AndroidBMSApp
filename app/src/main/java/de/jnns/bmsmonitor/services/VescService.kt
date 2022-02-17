@@ -6,68 +6,70 @@ import android.bluetooth.BluetoothGatt
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
-import de.jnns.bmsmonitor.bike.LcdToMcuResponse
-import de.jnns.bmsmonitor.bike.McuToLcdResponse
 import de.jnns.bmsmonitor.bluetooth.VescGattClientCallback
 import de.jnns.bmsmonitor.bluetooth.BleManager
-import de.jnns.bmsmonitor.data.BikeData
+import de.jnns.bmsmonitor.bms.BmsCellInfoResponse
+import de.jnns.bmsmonitor.bms.BmsGeneralInfoResponse
+import de.jnns.bmsmonitor.data.BatteryData
+import de.jnns.bmsmonitor.static.EVescProfile
+import io.realm.Realm
 
 
 @ExperimentalUnsignedTypes
 class VescService : Service() {
-
-    // VESC Profile commands, they won't change
-    // TODO: Get real profile commands
-    private val cmdVescProfileBallern: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x03U, 0x00U, 0xFFU, 0xFDU, 0x77U).toByteArray()
-    private val cmdVescProfileCruise: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x04U, 0x00U, 0xFFU, 0xFCU, 0x77U).toByteArray()
-    private val cmdVescProfileLegal: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x04U, 0x00U, 0xFFU, 0xFCU, 0x77U).toByteArray()
-
     // Binder stuff
-    private val mBinder: IBinder = LocalBinder()
+    private val binder = LocalBinder()
 
     // bluetooth stuff
     private lateinit var bluetoothGatt: BluetoothGatt
     private lateinit var gattClientCallback: VescGattClientCallback
     private lateinit var currentBleDevice: BluetoothDevice
 
+    // Handler that is going to poll data from the bms
+    // it is going to toggle "dataModeSwitch" and
+    // request General or Cell data
+    private val dataHandler: Handler = Handler()
+    private var dataModeSwitch = false
+    private var dataPollDelay: Long = 0
+
+    // we need both datasets to update the view
+    private var cellInfoReceived = false
+    private var generalInfoReceived = false
+
     // bluetooth device mac to use
     private lateinit var bleMac: String
     private lateinit var blePin: String
     private lateinit var bleName: String
 
-    // wait for both datasets
-    private var receivedLcdToMcu = false
-    private var receivedMcuToLcd = false
+    // no need to refresh data in the background
+    private var isInForeground = false
 
     // is connected
     private var isConnected = false
     private var isConnecting = false
-
-    // main dataset
-    private var bikeData = BikeData()
 
     private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
 
     override fun onCreate() {
         super.onCreate()
 
-        bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddressBike", "")!!
-        blePin = PreferenceManager.getDefaultSharedPreferences(this).getString("blePinBike", "")!!
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+
+        bleMac = prefs.getString("macAddressVesc", "")!!
+        blePin = prefs.getString("blePinVesc", "")!!
 
         BleManager.i.onUpdateFunctions.add {
             searchForDeviceAndConnect()
         }
 
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-
         listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == "macAddressBike") {
-                bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddressBike", "")!!
+            if (key == "macAddressVesc") {
+                bleMac = PreferenceManager.getDefaultSharedPreferences(this).getString("macAddressVesc", "")!!
 
                 disconnectFromDevice()
                 searchForDeviceAndConnect()
@@ -76,62 +78,15 @@ class VescService : Service() {
 
         prefs.registerOnSharedPreferenceChangeListener(listener)
 
-        // bluetooth uart callbacks
-        gattClientCallback = VescGattClientCallback(
-            ::onConnectionSucceeded,    // on connection fails
-            ::connectToDevice           // on connection fails
-        )
+        isInForeground = true
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         return START_STICKY
     }
 
-    inner class LocalBinder : Binder() {
-        // Return this instance of LocalService so clients can call public methods
-        val service: VescService
-            get() =// Return this instance of LocalService so clients can call public methods
-                this@VescService
-    }
-
-    override fun onBind(intent: Intent?): IBinder {
-        return mBinder
-    }
-
-    private fun onLcdToMcuDataAvailable(data: LcdToMcuResponse) {
-        bikeData.assistLevel = data.assistLevel
-
-        receivedLcdToMcu = true
-        sendData()
-
-        Log.d("BikeService", "onLcdToMcuDataAvailable")
-    }
-
-    private fun onMcuToLcdDataAvailable(data: McuToLcdResponse) {
-        bikeData.speed = data.speed
-
-        receivedMcuToLcd = true
-        sendData()
-
-        Log.d("BikeService", "onMcuToLcdDataAvailable")
-    }
-
-    private fun sendData() {
-        if (receivedLcdToMcu && receivedMcuToLcd) {
-            val intent = Intent("bikeDataIntent")
-            intent.putExtra("deviceName", bleName)
-            intent.putExtra("bikeData", Gson().toJson(bikeData))
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
-        }
-    }
-
-    private fun searchForDeviceAndConnect() {
-        val bleDevice = BleManager.i.bleDevices.firstOrNull { x -> x.address.equals(bleMac, ignoreCase = true) }
-
-        if (bleDevice != null) {
-            currentBleDevice = bleDevice
-            connectToDevice()
-        }
+    override fun onBind(intent: Intent): IBinder {
+        return binder
     }
 
     private fun onConnectionFailed() {
@@ -144,10 +99,37 @@ class VescService : Service() {
     private fun onConnectionSucceeded() {
         isConnected = true
         isConnecting = false
+
+        /*
+        dataHandler.postDelayed(object : Runnable {
+            override fun run() {
+                if (gattClientCallback.isConnected) {
+                    if (isInForeground) {
+                        if (dataModeSwitch) {
+                            writeBytes(cmdGeneralInfo)
+                        } else {
+                            writeBytes(cmdCellInfo)
+                        }
+
+                        dataModeSwitch = !dataModeSwitch
+
+                        dataHandler.postDelayed(this, dataPollDelay)
+                    }
+                } else {
+                    connectToDevice()
+                }
+            }
+        }, dataPollDelay)
+        */
     }
 
-    fun setBallernProfile() {
-        return
+    private fun searchForDeviceAndConnect() {
+        val bleDevice = BleManager.i.bleDevices.firstOrNull { x -> x.address.equals(bleMac, ignoreCase = true) }
+
+        if (bleDevice != null) {
+            currentBleDevice = bleDevice
+            connectToDevice()
+        }
     }
 
     private fun connectToDevice() {
@@ -160,7 +142,8 @@ class VescService : Service() {
                 ::onConnectionFailed        // on connection fails
             )
 
-            currentBleDevice.setPin(blePin.toByteArray())
+            if(blePin.isNotEmpty())
+                currentBleDevice.setPin(blePin.toByteArray())
             currentBleDevice.createBond()
 
             bluetoothGatt = currentBleDevice.connectGatt(this, false, gattClientCallback)
@@ -173,5 +156,19 @@ class VescService : Service() {
 
             isConnected = false
         }
+    }
+
+    private fun writeBytes(bytes: ByteArray) {
+        gattClientCallback.writeCharacteristic.value = bytes
+        bluetoothGatt.writeCharacteristic(gattClientCallback.writeCharacteristic)
+    }
+
+    public fun setProfile(profile: EVescProfile){
+        writeBytes(profile.bytes)
+    }
+
+    inner class LocalBinder : Binder() {
+        // Return this instance of LocalService so clients can call public methods
+        fun getService(): VescService = this@VescService
     }
 }

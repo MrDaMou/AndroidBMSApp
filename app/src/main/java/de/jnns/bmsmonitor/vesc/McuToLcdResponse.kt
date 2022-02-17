@@ -1,4 +1,4 @@
-package de.jnns.bmsmonitor.bike
+package de.jnns.bmsmonitor.vesc
 
 class McuToLcdResponse(bytes: ByteArray) {
     var batteryLevel: Int = 0

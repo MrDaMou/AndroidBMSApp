@@ -8,8 +8,8 @@
     <item
         android:id="@+id/page_bike"
         android:enabled="true"
-        android:icon="@drawable/ic_bike"
-        android:title="@string/navBike"/>
+        android:icon="@drawable/ic_vesc"
+        android:title="@string/navVesc"/>
     <item
         android:id="@+id/page_stats"
         android:enabled="true"

@@ -18,14 +18,14 @@ class VescGattClientCallback(
 ) :
     BluetoothGattCallback() {
 
-    private var isConnected = false
+    var isConnected = false
 
-    private lateinit var readCharacteristic: BluetoothGattCharacteristic
-    private lateinit var writeCharacteristic: BluetoothGattCharacteristic
+    lateinit var readCharacteristic: BluetoothGattCharacteristic
+    lateinit var writeCharacteristic: BluetoothGattCharacteristic
 
     private val uartUuid = UUID.fromString("6e400001-b5a3-f393-e0a9-e50e24dcca9e")
-    private val rxUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
-    private val txUuid = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+    private val rxUuid = UUID.fromString("6e400003-b5a3-f393-e0a9-e50e24dcca9e")
+    private val txUuid = UUID.fromString("6e400002-b5a3-f393-e0a9-e50e24dcca9e")
 
     private val bufferSize: Int = 80
     private var uartBuffer = ByteArray(bufferSize)
@@ -75,7 +75,7 @@ class VescGattClientCallback(
     override fun onCharacteristicChanged(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         super.onCharacteristicChanged(gatt, characteristic)
 
-        // Log.d("BluetoothGatt", "BLE Data (" + characteristic.value.size + "): " + characteristic.value.toHexString())
+        Log.d("BluetoothGatt", "BLE Data (" + characteristic.value.size + "): " + characteristic.value.toHexString())
 
         for (byte: Byte in characteristic.value) {
             if (uartBufferPos >= bufferSize) {

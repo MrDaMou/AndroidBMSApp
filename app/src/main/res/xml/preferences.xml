@@ -26,22 +26,22 @@
             app:useSimpleSummaryProvider="true" />
 
         <CheckBoxPreference
-            app:icon="@drawable/ic_bike"
-            app:key="bikeEnabled"
-            app:title="@string/settingsBikeEnabled"
+            app:icon="@drawable/ic_vesc"
+            app:key="vescEnabled"
+            app:title="@string/settingsVescEnabled"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
             app:icon="@drawable/ic_bluetooth"
-            app:key="macAddressBike"
-            app:title="@string/settingsBluetoothMacBike"
+            app:key="macAddressVesc"
+            app:title="@string/settingsBluetoothMacVesc"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             app:defaultValue="000000"
             app:icon="@drawable/ic_key"
-            app:key="blePinBike"
-            app:title="@string/settingsBluetoothPinBike"
+            app:key="blePinVesc"
+            app:title="@string/settingsBluetoothPinVesc"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
@@ -107,8 +107,8 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="bike_category"
-        app:title="Bike">
+        app:key="vesc_category"
+        app:title="Vesc">
 
         <EditTextPreference
             android:inputType="number"

@@ -1,4 +1,4 @@
-package de.jnns.bmsmonitor.bike
+package de.jnns.bmsmonitor.vesc
 
 @ExperimentalUnsignedTypes
 class LcdToMcuResponse(bytes: ByteArray) {

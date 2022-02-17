@@ -1,9 +1,14 @@
 package de.jnns.bmsmonitor
 
 import android.Manifest
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.IBinder
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
@@ -17,6 +22,9 @@ import io.realm.Realm
 @ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
     val binding get() = _binding!!
+
+    public var vescService: VescService? = null
+    public var vescServiceBound = false
 
     private var _binding: ActivityMainBinding? = null
 
@@ -34,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val batteryEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("batteryEnabled", false)
-        val bikeEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("bikeEnabled", false)
+        val vescEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("vescEnabled", false)
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 4711)
@@ -43,8 +51,11 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, BmsService::class.java).also { intent -> startService(intent) }
             }
 
-            if (bikeEnabled) {
-                Intent(this, VescService::class.java).also { intent -> startService(intent) }
+            if (vescEnabled) {
+                Intent(this, VescService::class.java).also { intent ->
+                    startService(intent) }.also { intent ->
+                    bindService(intent, vescServiceConnection, Context.BIND_AUTO_CREATE)
+                }
             }
 
             Intent(this, BleService::class.java).also { intent -> startService(intent) }
@@ -86,4 +97,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean = findNavController(R.id.nav_host_fragment).navigateUp() || super.onSupportNavigateUp()
+
+    private val vescServiceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            className: ComponentName,
+            service: IBinder
+        ) {
+            val binder = service as VescService.LocalBinder
+            vescService = binder.getService()
+            vescServiceBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            vescServiceBound = false
+        }
+    }
 }

@@ -7,7 +7,7 @@
 
     <string name="waitForBms">Waiting for BMS…</string>
     <string name="connectedToBms">BMS: %1$s</string>
-    <string name="connectedToBike">Bike: %1$s</string>
+    <string name="connectedToVesc">VESC: %1$s</string>
 
     <string name="power">Power</string>
     <string name="speed">Speed</string>
@@ -15,7 +15,7 @@
     <string name="cells">Cell Voltage</string>
 
     <string name="navBattery">Battery</string>
-    <string name="navBike">Bike</string>
+    <string name="navVesc">VESC</string>
     <string name="navSettings">Settings</string>
     <string name="navStats">Stats</string>
 
@@ -41,13 +41,13 @@
     <string name="unitDisplayCelsius">°C</string>
 
     <string name="settingsBatteryEnabled">Battery Service</string>
-    <string name="settingsBikeEnabled">Bike Service</string>
+    <string name="settingsVescEnabled">Vesc Service</string>
 
     <string name="settingsBluetoothMac">BMS MAC Address</string>
     <string name="settingsBluetoothPin">BMS Bluetooth Pin</string>
 
-    <string name="settingsBluetoothMacBike">Bike MAC Address</string>
-    <string name="settingsBluetoothPinBike">Bike Bluetooth Pin</string>
+    <string name="settingsBluetoothMacVesc">VESC MAC Address</string>
+    <string name="settingsBluetoothPinVesc">VESC Bluetooth Pin</string>
 
     <string name="settingsSmoothingMinutes">Smoothing Minutes</string>
     <string name="settingsRefreshInterval">Refresh Interval (ms)</string>

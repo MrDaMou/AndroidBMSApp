@@ -18,6 +18,7 @@ import de.jnns.bmsmonitor.databinding.FragmentVescBinding
 import de.jnns.bmsmonitor.services.VescService
 import de.jnns.bmsmonitor.services.BmsService
 import de.jnns.bmsmonitor.static.EVescProfile
+import java.util.*
 
 
 @ExperimentalUnsignedTypes
@@ -39,8 +40,6 @@ class VescProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-
         binding.buttonBallern.setOnClickListener{
             profileButtonClick(EVescProfile.BALLERN)
         }
@@ -48,10 +47,8 @@ class VescProfileFragment : Fragment() {
             profileButtonClick(EVescProfile.CRUISE)
         }
         binding.buttonLegal.setOnClickListener{
+            profileButtonClick(EVescProfile.LEGAL)
         }
-
-        val ayy = 3.1415926f
-        Toast.makeText(activity, java.lang.Float.toHexString(ayy), Toast.LENGTH_LONG)
     }
 
     override fun onDestroy() {
@@ -61,17 +58,31 @@ class VescProfileFragment : Fragment() {
 
     private fun updateUi(bikeData: BikeData) {
         //requireActivity().runOnUiThread {
-        // TODO: update UI
+        // TODO: update UI based on profile set on hardware
         //}
         return
     }
 
     private fun profileButtonClick(profile: EVescProfile){
-            if ((activity as MainActivity).vescServiceBound) {
-                (activity as MainActivity).vescService?.setProfile(profile)
-                Toast.makeText(activity, "Profile Set: " + profile.name, Toast.LENGTH_SHORT).show()
-            }
-            else
-                Toast.makeText(activity, "VESC Service not connected", Toast.LENGTH_SHORT).show()
+        if ((activity as MainActivity).vescServiceBound) {
+            (activity as MainActivity).vescService?.setProfile(profile)
+            Toast.makeText(activity, "Profile Set: " + profile.name, Toast.LENGTH_SHORT).show()
+            PreferenceManager.getDefaultSharedPreferences(activity).edit().putString("currentVescProfile", profile.name).apply()
+            setActiveProfile(profile)
+        }
+        else
+            Toast.makeText(activity, "VESC Service not connected", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setActiveProfile(profile: EVescProfile){
+        binding.buttonLegal.setBackgroundResource(R.drawable.vesc_profile_button_inactive_bg)
+        binding.buttonCruise.setBackgroundResource(R.drawable.vesc_profile_button_inactive_bg)
+        binding.buttonBallern.setBackgroundResource(R.drawable.vesc_profile_button_inactive_bg)
+
+        when(profile){
+            EVescProfile.LEGAL -> binding.buttonLegal.setBackgroundResource(R.drawable.vesc_profile_button_active_bg)
+            EVescProfile.CRUISE -> binding.buttonCruise.setBackgroundResource(R.drawable.vesc_profile_button_active_bg)
+            else -> binding.buttonBallern.setBackgroundResource(R.drawable.vesc_profile_button_active_bg)
+        }
     }
 }

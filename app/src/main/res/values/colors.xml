@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF003B</color>
+    <color name="primary">#FFFFFF</color>
     <color name="secondary">#00C3FF</color>
+
+    <color name="buttonActiveBorder">#FFFFFF</color>
+    <color name="buttonInactiveBorder">#969696</color>
+
+    <color name="BMSCardBackground">#1AFFFFFF</color>
+
+    <color name="BatteryIconsFill">#FFFFFF</color>
+
+    <color name="bmsPowerButtonOn">#00CD00</color>
+    <color name="bmsPowerButtonOff">#222222</color>
+
 
     <color name="primaryLightRed">#FF003B</color>
     <color name="primaryLightYellow">#FF2F5F</color>

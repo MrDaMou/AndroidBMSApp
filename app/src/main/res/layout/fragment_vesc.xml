@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bgBase"
     tools:context=".VescProfileFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,7 +22,7 @@
             android:id="@+id/buttonBallern"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/vesc_profile_button_bg"
+            android:background="@drawable/vesc_profile_button_inactive_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -33,17 +32,27 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:gravity="center_horizontal"
             android:text="Ballern"
             android:textColor="@color/white"
             android:textSize="34sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/textView4"
+            app:layout_constraintBottom_toTopOf="@id/divider"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/buttonBallern" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="?android:attr/listDivider"
+            android:backgroundTint="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@id/textView4"
+            app:layout_constraintTop_toBottomOf="@id/textView"
+            tools:background="#FFFFFF" />
 
         <TextView
             android:id="@+id/textView4"
@@ -51,10 +60,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginBottom="1dp"
             android:gravity="center_horizontal"
             android:text="ayyyyyyy"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@id/textView5"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView" />
@@ -68,7 +78,6 @@
             android:gravity="center_horizontal"
             android:text="ayyyyyyy"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="@id/buttonBallern"
             app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textView4" />
@@ -91,7 +100,7 @@
             android:id="@+id/buttonCruise"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/vesc_profile_button_bg"
+            android:background="@drawable/vesc_profile_button_inactive_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -105,6 +114,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -114,7 +124,7 @@
             android:id="@+id/buttonLegal"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@drawable/vesc_profile_button_bg"
+            android:background="@drawable/vesc_profile_button_active_bg"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

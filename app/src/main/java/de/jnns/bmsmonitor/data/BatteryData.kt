@@ -14,7 +14,9 @@ open class BatteryData(
     var temperatureCount: Int = 0,
     var cellCount: Int = 0,
     var temperatures: RealmList<Float> = RealmList<Float>(),
-    var cellVoltages: RealmList<Float> = RealmList<Float>()
+    var cellVoltages: RealmList<Float> = RealmList<Float>(),
+    var mosUnlocked: Int = 0
+
 ) : RealmObject() {
 
     val voltage: Float

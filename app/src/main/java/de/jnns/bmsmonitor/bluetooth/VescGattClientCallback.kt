@@ -115,15 +115,15 @@ class VescGattClientCallback(
 
         val frameBytes = uartBuffer.slice(IntRange(0, size)).toByteArray()
 
-        Log.d("BluetoothGatt", "FrameData (" + frameBytes.size + "): " + frameBytes.toHexString())
+        Log.i("VESCResponse", "FrameData (" + frameBytes.size + "): " + frameBytes.toHexString())
 
-        if (frameBytes[1] == 0x3.toByte()) {
-            val generalInfo = BmsGeneralInfoResponse(frameBytes)
-            //onGeneralInfoCallback(generalInfo)
-        } else if (frameBytes[1] == 0x4.toByte()) {
-            val cellInfo = BmsCellInfoResponse(frameBytes)
-            //onCellInfoCallback(cellInfo)
-        }
+        //if (frameBytes[1] == 0x3.toByte()) {
+        //    val generalInfo = BmsGeneralInfoResponse(frameBytes)
+        //    onGeneralInfoCallback(generalInfo)
+        //} else if (frameBytes[1] == 0x4.toByte()) {
+        //    val cellInfo = BmsCellInfoResponse(frameBytes)
+        //    //onCellInfoCallback(cellInfo)
+        //}
     }
 
     private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }

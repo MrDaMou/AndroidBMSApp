@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -21,10 +22,15 @@ import io.realm.Realm
 
 @ExperimentalUnsignedTypes
 class BmsService : Service() {
+    // Binder stuff
+    private val binder = LocalBinder()
+
     // BMS commands, they won't change
     private val cmdGeneralInfo: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x03U, 0x00U, 0xFFU, 0xFDU, 0x77U).toByteArray()
     private val cmdCellInfo: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x04U, 0x00U, 0xFFU, 0xFCU, 0x77U).toByteArray()
     private val cmdBmsVersion: ByteArray = ubyteArrayOf(0xDDU, 0xA5U, 0x05U, 0x00U, 0xFFU, 0xFBU, 0x77U).toByteArray()
+    private val cmdOpenMos: ByteArray = ubyteArrayOf(0xDDU, 0x5AU, 0xE1U, 0x02U, 0x00U, 0x00U, 0xFFU, 0x1DU, 0x77U).toByteArray()
+    private val cmdCloseMos: ByteArray = ubyteArrayOf(0xDDU, 0x5AU, 0xE1U, 0x02U, 0x00U, 0x03U, 0xFFU, 0x1AU, 0x77U).toByteArray()
 
     // bluetooth stuff
     private lateinit var bluetoothGatt: BluetoothGatt
@@ -90,8 +96,8 @@ class BmsService : Service() {
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    override fun onBind(intent: Intent): IBinder {
+        return binder
     }
 
     private fun onGeneralInfoAvailable(generalInfo: BmsGeneralInfoResponse) {
@@ -100,6 +106,7 @@ class BmsService : Service() {
         batteryData.totalCapacity = generalInfo.nominalCapacity
         batteryData.temperatureCount = generalInfo.temperatureProbeCount
         batteryData.temperatures = generalInfo.temperatureProbeValues
+        batteryData.mosUnlocked = generalInfo.dischargeMosStatus
 
         generalInfoReceived = true
         sendData()
@@ -211,5 +218,17 @@ class BmsService : Service() {
     private fun writeBytes(bytes: ByteArray) {
         gattClientCallback.writeCharacteristic.value = bytes
         bluetoothGatt.writeCharacteristic(gattClientCallback.writeCharacteristic)
+    }
+
+    fun toggleMosStatus(){
+        if(batteryData.mosUnlocked == 1)
+            writeBytes(cmdCloseMos)
+        else
+            writeBytes(cmdOpenMos)
+    }
+
+    inner class LocalBinder : Binder() {
+        // Return this instance of LocalService so clients can call public methods
+        fun getService(): BmsService = this@BmsService
     }
 }

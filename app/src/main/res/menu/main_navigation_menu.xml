@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/page_battery"
         android:enabled="true"
         android:icon="@drawable/ic_battery"
-        android:title="@string/navBattery"/>
+        android:title="@string/navBattery" />
     <item
         android:id="@+id/page_bike"
         android:enabled="true"
         android:icon="@drawable/ic_vesc"
-        android:title="@string/navVesc"/>
+        android:title="@string/navVesc" />
     <item
         android:id="@+id/page_stats"
         android:enabled="true"
         android:icon="@drawable/ic_stats"
-        android:title="@string/navStats"/>
+        android:title="@string/navStats" />
     <item
         android:id="@+id/page_settings"
         android:enabled="true"
         android:icon="@drawable/ic_settings"
-        android:title="@string/navSettings"/>
+        android:title="@string/navSettings" />
 </menu>

@@ -8,23 +8,25 @@ import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.preference.PreferenceManager
 import de.jnns.bmsmonitor.bluetooth.BleService
 import de.jnns.bmsmonitor.databinding.ActivityMainBinding
-import de.jnns.bmsmonitor.services.VescService
 import de.jnns.bmsmonitor.services.BmsService
+import de.jnns.bmsmonitor.services.VescService
 import io.realm.Realm
 
 @ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
-    val binding get() = _binding!!
+    private val binding get() = _binding!!
 
-    public var vescService: VescService? = null
-    public var vescServiceBound = false
+    var vescService: VescService? = null
+    var vescServiceBound = false
+
+    var bmsService: BmsService? = null
+    var bmsServiceBound = false
 
     private var _binding: ActivityMainBinding? = null
 
@@ -41,6 +43,9 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set the VESC Profile to be Legal as it is the default one at startup of the hardware
+        PreferenceManager.getDefaultSharedPreferences(this).edit().putString("currentVescProfile", "LEGAL").apply()
+
         val batteryEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("batteryEnabled", false)
         val vescEnabled = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("vescEnabled", false)
 
@@ -48,7 +53,10 @@ class MainActivity : AppCompatActivity() {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 4711)
         } else {
             if (batteryEnabled) {
-                Intent(this, BmsService::class.java).also { intent -> startService(intent) }
+                Intent(this, BmsService::class.java).also { intent ->
+                    startService(intent) }.also { intent ->
+                    bindService(intent, bmsServiceConnection, Context.BIND_AUTO_CREATE)
+                }
             }
 
             if (vescEnabled) {
@@ -110,6 +118,21 @@ class MainActivity : AppCompatActivity() {
 
         override fun onServiceDisconnected(arg0: ComponentName) {
             vescServiceBound = false
+        }
+    }
+
+    private val bmsServiceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(
+            className: ComponentName,
+            service: IBinder
+        ) {
+            val binder = service as BmsService.LocalBinder
+            bmsService = binder.getService()
+            bmsServiceBound = true
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            bmsServiceBound = false
         }
     }
 }

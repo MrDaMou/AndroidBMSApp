@@ -11,7 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
@@ -51,7 +54,7 @@ class BatteryFragment : Fragment() {
             try {
                 val msg: String = intent.getStringExtra("batteryData")!!
 
-                binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBms), intent.getStringExtra("deviceName"))
+                //binding.labelStatus.text = String.format(resources.getString(R.string.connectedToBms), intent.getStringExtra("deviceName"))
 
                 if (msg.isNotEmpty()) {
                     updateUi(Gson().fromJson(msg, BatteryData::class.java))
@@ -95,6 +98,10 @@ class BatteryFragment : Fragment() {
         binding.speedViewSpeed.minSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minPower", "-500")!!.toFloat()
         binding.speedViewSpeed.maxSpeed = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxPower", "1000")!!.toFloat()
 
+        binding.powerButton.setOnClickListener{
+            Toast.makeText(activity, "ayy", Toast.LENGTH_LONG).show()
+        }
+
         minCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("minCellVoltage", "2500")!!.toInt()
         maxCellVoltage = PreferenceManager.getDefaultSharedPreferences(requireContext()).getString("maxCellVoltage", "4200")!!.toInt()
 
@@ -123,6 +130,10 @@ class BatteryFragment : Fragment() {
         binding.barchartCells.xAxis.setDrawAxisLine(false)
 
         binding.barchartCells.axisRight.isEnabled = false
+
+        binding.powerButton.setOnClickListener{
+            powerButtonAction()
+        }
     }
 
     override fun onResume() {
@@ -131,7 +142,7 @@ class BatteryFragment : Fragment() {
         isInForeground = true
 
         binding.speedViewSpeed.speedTo(0.0f, 0)
-        binding.labelStatus.text = getString(R.string.waitForBms)
+        //binding.labelStatus.text = getString(R.string.waitForBms)
     }
 
     override fun onPause() {
@@ -145,6 +156,12 @@ class BatteryFragment : Fragment() {
         }
 
         requireActivity().runOnUiThread {
+            // Powered on button color
+            if(batteryData.mosUnlocked == 1)
+                binding.speedViewSpeed.centerCircleColor = ContextCompat.getColor(requireContext(), R.color.bmsPowerButtonOn)
+            else
+                binding.speedViewSpeed.centerCircleColor = ContextCompat.getColor(requireContext(), R.color.bmsPowerButtonOff)
+
             // Power Gauge
             val powerUsage = batteryData.power * -1.0f
 
@@ -334,5 +351,16 @@ class BatteryFragment : Fragment() {
 
         val factor = 10.0.pow(decimals.toDouble()).toFloat()
         return (value * factor).roundToInt() / factor
+    }
+
+    private fun powerButtonAction(){
+        if((activity as MainActivity).bmsServiceBound){
+            (activity as MainActivity).bmsService?.toggleMosStatus()
+            // when the power is toggled, the VESCs profile resets to default
+            PreferenceManager.getDefaultSharedPreferences(activity).edit().putString("currentVescProfile", "LEGAL").apply()
+        }
+        else
+            Toast.makeText(activity, "BMS Service not connected", Toast.LENGTH_SHORT).show()
+
     }
 }

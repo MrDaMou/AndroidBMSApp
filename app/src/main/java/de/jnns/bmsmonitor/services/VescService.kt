@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
@@ -24,6 +25,9 @@ import io.realm.Realm
 class VescService : Service() {
     // Binder stuff
     private val binder = LocalBinder()
+
+    private val cmdGetMcConf: ByteArray = ubyteArrayOf(0x02U, 0x01U, 0x0EU, 0xE1U, 0xCEU, 0x03U).toByteArray()
+
 
     // bluetooth stuff
     private lateinit var bluetoothGatt: BluetoothGatt
@@ -170,5 +174,10 @@ class VescService : Service() {
     inner class LocalBinder : Binder() {
         // Return this instance of LocalService so clients can call public methods
         fun getService(): VescService = this@VescService
+    }
+
+    fun requestMcConfTemp(){
+        Log.i("Request sent", "Get McConf request has been sent")
+        writeBytes(cmdGetMcConf)
     }
 }

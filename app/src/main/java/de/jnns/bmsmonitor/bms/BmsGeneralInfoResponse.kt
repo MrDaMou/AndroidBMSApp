@@ -1,5 +1,6 @@
 package de.jnns.bmsmonitor.bms
 
+import android.util.Log
 import io.realm.RealmList
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -16,6 +17,8 @@ class BmsGeneralInfoResponse(bytes: ByteArray) {
     var temperatureProbeCount: Int = 0
     var temperatureProbeValues: RealmList<Float>
     var cycles: Short = 0
+    var dischargeMosStatus = 0
+    var chargeMosStatus = 0
 
     init {
         command = bytes[1].toInt()
@@ -40,6 +43,9 @@ class BmsGeneralInfoResponse(bytes: ByteArray) {
         capacity = bytes[23].toInt() / 100.0f
 
         // 24 = MOS status
+        dischargeMosStatus = bytes[24].toInt().shr(1) % 2
+        chargeMosStatus = bytes[24].toInt() % 2
+
         // 25 = number of cells
 
         temperatureProbeCount = bytes[26].toInt()
@@ -48,6 +54,8 @@ class BmsGeneralInfoResponse(bytes: ByteArray) {
         for (i in 0 until temperatureProbeCount) {
             temperatureProbeValues.add((bytesToShort(bytes[27 + (i * 2)], bytes[27 + (i * 2) + 1]) - 2731) / 10.0f)
         }
+
+        Log.i("BMSGeneralInfo", bytes[24].toInt().toString())
     }
 
     private fun bytesToShort(h: Byte, l: Byte, order: ByteOrder = ByteOrder.BIG_ENDIAN): Short {

@@ -86,6 +86,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        val vescServiceIntent = Intent(this@MainActivity, VescService::class.java)
+        stopService(vescServiceIntent)
+        val bmsServiceIntent = Intent(this@MainActivity, BmsService::class.java)
+        stopService(bmsServiceIntent)
         super.onDestroy()
         _binding = null
     }

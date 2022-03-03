@@ -41,7 +41,7 @@ open class BatteryData(
 
     val watthours: Float
         get() {
-            return currentCapacity * voltage
+            return currentCapacity * 36
         }
 
     val totalWatthours: Float

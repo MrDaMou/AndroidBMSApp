@@ -11,7 +11,7 @@
     <color name="BatteryIconsFill">#FFFFFF</color>
 
     <color name="bmsPowerButtonOn">#00CD00</color>
-    <color name="bmsPowerButtonOff">#222222</color>
+    <color name="bmsPowerButtonOff">#2c2c2c</color>
 
 
     <color name="primaryLightRed">#FF003B</color>
